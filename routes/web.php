@@ -219,6 +219,15 @@ Route::prefix('admin')->group(function () {
             Route::get('get-tenant-info', 'Admin\JamidariPrepareController@getTenantInfo')->name('jamidari.tenant.info.get.ajax');
             Route::post('jamidari-prepare-delete-individual', 'Admin\JamidariPrepareController@deleteIndividual')->name('jamidari.prepare.delete.individual');
 
+            //Banglalink
+            Route::get('banglalink', 'Admin\BanglaLinkPrepareController@index')->name('banglalink.index');
+            Route::get('banglalink/add', 'Admin\BanglaLinkPrepareController@add')->name('banglalink.add');
+            Route::post('banglalink/store', 'Admin\BanglaLinkPrepareController@store')->name('banglalink.store');
+            Route::get('banglalink/edit/{id}', 'Admin\BanglaLinkPrepareController@edit')->name('banglalink.edit');
+            Route::post('banglalink/update/{id}', 'Admin\BanglaLinkPrepareController@update')->name('banglalink.update');
+            Route::get('banglalink/delete', 'Admin\BanglaLinkPrepareController@delete')->name('banglalink.delete');
+  
+  
 
             // EBill prepeare
             Route::get('ebill-prepare-index', 'Admin\EbillPrepareController@index')->name('ebill.prepare.index');
