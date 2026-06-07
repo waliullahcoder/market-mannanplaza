@@ -58,6 +58,11 @@
 }
 
 @media print{
+     @page {
+        size: A4;
+        margin-top: -50mm;
+    }
+
     .noprint,
     .main-sidebar,
     .main-header,
