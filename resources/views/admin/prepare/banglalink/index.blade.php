@@ -144,12 +144,12 @@
                                             <a href="{{ route('banglalink.edit', $bill->id) }}">
                                                 <i class="fa fa-edit text-info"></i>
                                             </a>
-                                            <a href="{{ route('banglalink.edit', $bill->id) }}">
+                                            <!-- <a href="{{ route('banglalink.edit', $bill->id) }}">
                                                 <i class="fa fa-print text-success m-r-10"></i>
-                                            </a>
+                                            </a> -->
                                              <button type="button" class="btn btn-sm btn-primary" onclick="printBill({{ $bill->id }})">
-                                Print
-                            </button>
+                                                <i class="fa fa-print text-success m-r-10"></i>Print
+                                            </button>
 
                                             <!-- <a href="javascript:void(0)" data-id="{{ $bill->id }}">
                                                 <i class="fa fa-trash text-danger"></i>
