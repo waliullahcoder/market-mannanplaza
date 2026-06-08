@@ -15,7 +15,7 @@
     .bill-copy{
          margin-top:100px;
         width:210mm;
-        height:148.5mm;
+        height:157mm;
         padding:10mm 12mm 7mm;
         box-sizing:border-box;
         position:relative;
@@ -78,11 +78,8 @@
     }
 
     .bill-body{
-       
         display:grid;
         grid-template-columns:1fr 1fr;
-        /* gap:18mm;
-        margin-top:12mm; */
         font-size:16px;
     }
 
@@ -130,6 +127,7 @@
         margin-top:18mm;
         font-size:15px;
         font-weight:700;
+        align-items:end;
     }
 
     .signature-line{
@@ -145,6 +143,15 @@
     .signature-right .signature-line{
         margin-left:auto;
         text-align:center;
+    }
+
+    .signature-img{
+        width:130px;
+        height:45px;
+        object-fit:contain;
+        display:block;
+        margin-left:auto;
+        margin-bottom:-4px;
     }
 
     .notice{
@@ -280,11 +287,10 @@
 
                 <div class="label">EP Unit</div><div>:</div><div>{{ isset($bill[0]) ? $bill[0]->PreviousUnit : 0 }}</div>
                 <div class="label">Uses Unit</div><div>:</div><div>{{ isset($bill[0]) ? $bill[0]->UsesUnit : 0 }}</div>
-                 <div class="label">WC Unit</div><div>:</div><div>{{ isset($bill[1]) ? $bill[1]->LastUnit : 0 }}</div>
+                <div class="label">WC Unit</div><div>:</div><div>{{ isset($bill[1]) ? $bill[1]->LastUnit : 0 }}</div>
                 <div class="label">W Bill</div><div>:</div><div>{{ isset($bill[1]) ? number_format($bill[1]->Amount, 2) : '0.00' }}</div>
 
                 <div class="label">EC Unit</div><div>:</div><div>{{ isset($bill[0]) ? $bill[0]->LastUnit : 0 }}</div>
-                
 
                 <div class="label">Total Bill</div><div>:</div>
                 <div><span class="amount-box">{{ number_format($total, 2) }}</span></div>
@@ -322,7 +328,10 @@
         </div>
 
         <div class="signature-right">
-            
+            <img class="signature-img"
+                 src="{{ asset('public/elite-admin/assets/images/signature.png') }}"
+                 alt="Signature">
+
             <div class="signature-line">Authorize Signature</div>
         </div>
     </div>
@@ -331,11 +340,6 @@
         Please pay your bill in appropriate time. Otherwise your Electric Supply will be disconnected.
     </div>
     <div class="thanks">Thank you for your co-operation.</div>
-
-    <!-- <div class="print-footer">
-        <div>Print Date&nbsp; {{ date('d-F-Y') }}</div>
-        <div>Print Time&nbsp; {{ date('h:i:s a') }}</div>
-    </div>  -->
 
 </div>
 
