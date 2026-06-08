@@ -13,6 +13,7 @@
     }
 
     .bill-copy{
+         margin-top:100px;
         width:210mm;
         height:148.5mm;
         padding:10mm 12mm 7mm;
@@ -77,10 +78,11 @@
     }
 
     .bill-body{
+       
         display:grid;
         grid-template-columns:1fr 1fr;
-        gap:18mm;
-        margin-top:12mm;
+        /* gap:18mm;
+        margin-top:12mm; */
         font-size:16px;
     }
 
@@ -282,7 +284,7 @@
                 <div class="label">W Bill</div><div>:</div><div>{{ isset($bill[1]) ? number_format($bill[1]->Amount, 2) : '0.00' }}</div>
 
                 <div class="label">EC Unit</div><div>:</div><div>{{ isset($bill[0]) ? $bill[0]->LastUnit : 0 }}</div>
-                <div class="label">EBill + Vat</div><div>:</div><div>{{ isset($bill[0]) ? number_format($bill[0]->Amount, 2) : '0.00' }}</div>
+                
 
                 <div class="label">Total Bill</div><div>:</div>
                 <div><span class="amount-box">{{ number_format($total, 2) }}</span></div>
@@ -301,8 +303,7 @@
                 <div class="label">Floor No</div><div>:</div><div>{{ $bill['tenant']->Floor ?? '' }}</div>
                 <div class="label">Client Code</div><div>:</div><div>{{ $bill['tenant']->Code ?? '' }}</div>
                 <div class="label">Client Name</div><div>:</div><div>{{ $bill['tenant']->Name ?? '' }}</div>
-
-               
+                <div class="label">EBill + Vat</div><div>:</div><div>{{ isset($bill[0]) ? number_format($bill[0]->Amount, 2) : '0.00' }}</div>
 
                 @if(isset($sbills))
                     @foreach($sbills as $sb)
@@ -321,6 +322,7 @@
         </div>
 
         <div class="signature-right">
+            
             <div class="signature-line">Authorize Signature</div>
         </div>
     </div>
@@ -329,6 +331,12 @@
         Please pay your bill in appropriate time. Otherwise your Electric Supply will be disconnected.
     </div>
     <div class="thanks">Thank you for your co-operation.</div>
+
+    <!-- <div class="print-footer">
+        <div>Print Date&nbsp; {{ date('d-F-Y') }}</div>
+        <div>Print Time&nbsp; {{ date('h:i:s a') }}</div>
+    </div>  -->
+
 </div>
 
 @if(!$loop->last)
