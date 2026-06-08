@@ -91,9 +91,9 @@ class EbillPrepareController extends Controller
         }
 
         // fetch service charge
-        $sbills = ServiceChargeCollection::where('CMonth', $parameters[0]->CMonth)
-            ->where('CYear', $parameters[0]->CYear)->whereIn('Client_Code', $ids)->with(['position_holder'])->get();
-
+        // $sbills = ServiceChargeCollection::where('CMonth', $parameters[0]->CMonth)
+        //     ->where('CYear', $parameters[0]->CYear)->whereIn('Client_Code', $ids)->with(['position_holder'])->get();
+        $sbills = ServiceChargeCollection::where('SerialNo', $id)->get();     
         foreach ($sbills as $key => $sbill) {
             if (!is_null($sbill->position_holder)) {
                 $data->bills[$sbill->position_holder->Code][2] = [$sbill];
@@ -103,7 +103,7 @@ class EbillPrepareController extends Controller
             }
         }
 
-        return view('admin.prepare.ebill.print', compact(['title', 'searchFormLink', 'printFormLink', 'data']));
+        return view('admin.prepare.ebill.print', compact(['title', 'sbills','searchFormLink', 'printFormLink', 'data']));
     }
 
     public function add(Request $request)
