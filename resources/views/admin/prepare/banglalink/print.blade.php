@@ -60,7 +60,7 @@
 @media print{
      @page {
         size: A4;
-        margin-top: -50mm;
+        margin-top: -70mm;
     }
 
     .noprint,
@@ -320,9 +320,9 @@
             </tbody>
         </table>
 
-    <div class="total">
+    <!-- <div class="total">
         <h2>Grand Total: Tk {{ number_format($bill->grand_total, 2) }}</h2>
-    </div>
+    </div> -->
 </div>
 @endforeach
 

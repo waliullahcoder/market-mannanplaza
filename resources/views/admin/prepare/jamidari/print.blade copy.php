@@ -12,10 +12,10 @@
         }
         .table td, .table th{
             padding:1px !important;
-            font-size:21px;
+            font-size:19px;
         }
         .pr-2, .px-2{
-             font-size:21px;
+             font-size:19px;
         }
         @media print {
             div {
@@ -25,7 +25,7 @@
                 margin-top:-100px;
             }
             p,tr,td{
-                font-size:21px;
+                font-size:19px;
             }
             
         }
@@ -73,7 +73,7 @@
                             </div>
                             <script>
                                 JsBarcode("#bill_id_{{ $bill->id }}",
-                                    "{{ date('M', strtotime($bill->CMonth)) }}-{{ $bill->CYear }}");
+                                    "{{ $bill->position_holder->ID }}-{{ date('M', strtotime($bill->CMonth)) }}-{{ $bill->CYear }}-1");
                             </script>
 
                         </div>
@@ -83,41 +83,38 @@
                             <div class="col-md-4">
                                 <table class="table border-0 table-borderless">
                                     <tr class="pb-2">
-                                        <td class="font-weight-bold pr-2">Serial No :</td>
+                                        <td style="width:180px;" class="font-weight-bold pr-2">Serial No :</td>
                                         <td>{{ $bill->SerialNo }}</td>
                                     </tr>
 
                                     <tr class="pb-2">
-                                        <td class="font-weight-bold pr-2">Shop/Office Name : </td>
-                                        <td>{{ $bill->position_holder->Code }}</td>
-                                    </tr>
-                                     <tr class="pb-2">
-                                        <td class="font-weight-bold pr-2">Position Holder Name : </td>
-                                        <td>{{ $bill->position_holder->Name }}</td>
+                                        <td style="width:180px;" class="font-weight-bold pr-2">Tenant : </td>
+                                        <td>{{ $bill->position_holder->Code }} ({{ $bill->position_holder->Name }})</td>
                                     </tr>
                                     <tr class="pb-2">
-                                        <td class="font-weight-bold pr-2">Floor Name : </td>
-                                        <td>{{ $bill->position_holder->Floor }}</td>
-                                    </tr>
-                                    <tr class="pb-2">
-                                        <td class="font-weight-bold pr-2">Name of Month : </td>
+                                        <td style="width:180px;" class="font-weight-bold pr-2">Name of Month : </td>
                                         <td>{{ $bill->CMonth }}</td>
                                     </tr>
 
                                     <tr class="pb-2">
-                                        <td class="font-weight-bold pr-2">Rent Amount : </td>
+                                        <td style="width:180px;" class="font-weight-bold pr-2">Rent Amount : </td>
                                         @if ($bill->position_holder->EntryReson == 'Rent')
                                             <td><span class="font-weight-bold"
-                                                    style="font-size:21px">{{ $bill->position_holder->Agg0ne }}</span>
+                                                    style="font-size: 19px">{{ $bill->position_holder->Agg0ne }}</span>
                                             </td>
                                         @else
                                             <td><span class="font-weight-bold"
-                                                    style="font-size:21px">{{ $bill->position_holder->Agg0ne }}</span>
+                                                    style="font-size: 19px">{{ $bill->position_holder->Agg0ne }}</span>
                                             </td>
                                         @endif
                                     </tr>
 
-                                  
+                                    <tr class="pb-2">
+                                        <td style="width:180px;" class="font-weight-bold pr-2">With Late Charge : </td>
+                                        <td><span class="font-weight-bold"
+                                                style="font-size: 19px">{{ round(($bill->Amount / 100) * 10) + $bill->Amount }}</span>
+                                        </td>
+                                    </tr>
                                     @php
                                         $previous_bills = \App\RentCollection::where('Client_Code', $bill->Client_Code)
                                             ->where('id', '!=', $bill->id)
@@ -133,21 +130,26 @@
                                             ->sum('Amount');
                                         $previous_due = $previous_bills + round(($penulty_bills / 100) * 10);
                                     @endphp
-                                   
+                                    <tr class="pb-2">
+                                        <td style="width:150px; white-space: nowrap;" class="font-weight-bold pr-2">Previous
+                                            Due : </td>
+                                        <td class="font-weight-bold" style="width:150px; font-size: 19px">
+                                            {{ $previous_due }}</td>
+                                    </tr>
                                 </table>
                             </div>
 
                             <div class="col-md-4">
                                 <table style="margin-top: 115px;">
                                     <tr class="pb-2">
-                                        <td class="font-weight-bold pr-2">Year :</td>
+                                        <td style="width:150px;" class="font-weight-bold pr-2">Year :</td>
                                         <td>{{ $bill->CYear }}</td>
                                     </tr>
 
                                     <tr class="pb-2">
-                                        <td class="font-weight-bold pr-2">Mothly Deduct : </td>
+                                        <td style="width:150px;" class="font-weight-bold pr-2">Mothly Deduct : </td>
                                         <td><span class="font-weight-bold"
-                                                style="font-size:21px">{{ $bill->position_holder->MonthlyDeduct }}</span>
+                                                style="font-size: 19px">{{ $bill->position_holder->MonthlyDeduct }}</span>
                                         </td>
                                     </tr>
                                     @php
@@ -161,9 +163,9 @@
                                             ->sum(DB::raw('Amount + penalty'));
                                     @endphp
                                     <tr class="pb-2">
-                                        <td class="font-weight-bold pr-2">Last Month Paid : </td>
+                                        <td style="width:150px;" class="font-weight-bold pr-2">Last Month Paid : </td>
                                         <td><span class="font-weight-bold"
-                                                style="font-size:21px">{{ $last_month_paid }}</span>
+                                                style="font-size: 19px">{{ $last_month_paid }}</span>
                                         </td>
                                     </tr>
                                 </table>
@@ -172,7 +174,7 @@
                             <div class="col-md-4">
                                 <table class="table border-0 table-borderless">
                                     <tr>
-                                        <td class="font-weight-bold pb-2">
+                                        <td style="width:150px;" class="font-weight-bold pb-2">
                                             <span> Date :</span>
                                         </td>
                                         <td>{{ date('d-m-Y', strtotime($bill->PaidDate)) }}</td>
@@ -181,23 +183,42 @@
 
                                 <table style="margin-top:10px;">
                                     <tr class="pb-2">
-                                        <td class="font-weight-bold pr-2">Paid Amount : </td>
+                                        <td style="width:150px;" class="font-weight-bold pr-2">Paid Amount : </td>
                                         @php
                                             $paid_amount = $bill->Amount;
                                         @endphp
                                         <td class="font-weight-bold"
-                                            style="border: 3px solid black;width:180px; font-size:30px">
+                                            style="border: 2px solid black;width:150px; font-size: 19px">
                                             {{ $paid_amount }}</td>
                                     </tr>
-                                    @php
+                                    <tr class="pb-2">
+                                        <td style="width:150px; white-space: nowrap;" class="font-weight-bold pr-2">With
+                                            Late Charge : </td>
+                                        @php
                                             $paid_amount = $bill->Amount;
                                             $current_with_charge = round(($bill->Amount / 100) * 10) + $paid_amount;
                                         @endphp
-                                    
+                                        <td class="font-weight-bold"
+                                            style="border: 2px solid black;width:150px; font-size: 19px">
+                                            {{ $current_with_charge }}</td>
+                                    </tr>
                                     @php
                                         $total_payable_with_charge = $previous_due + $current_with_charge;
                                     @endphp
-                                    
+                                    <tr class="pb-2">
+                                        <td style="width:150px; white-space: nowrap;" class="font-weight-bold pr-2">
+                                            Total Due Without Charge : </td>
+                                        <td class="font-weight-bold"
+                                            style="border: 2px solid black;width:150px; font-size: 19px">
+                                            {{ $previous_due + $paid_amount }}</td>
+                                    </tr>
+                                    <tr class="pb-2">
+                                        <td style="width:150px; white-space: nowrap;" class="font-weight-bold pr-2">
+                                            Total Due With Charge : </td>
+                                        <td class="font-weight-bold"
+                                            style="border: 2px solid black;width:150px; font-size: 19px">
+                                            {{ $total_payable_with_charge }}</td>
+                                    </tr>
                                 </table>
                             </div>
                         </div>
@@ -206,14 +227,34 @@
                             <div class="col-12">
                                 <table class="table table-bordered mt-2">
                                     <tr>
-                                        <td class="font-weight-bold pb-2">Paid Amount (Inword)</td>
-                                        <td class="text-center font-weight-bold">:</td>
+                                        <td style="width:450px;" class="font-weight-bold pb-2">Paid Amount (Inword)</td>
+                                        <td style="width:20px;" class="text-center font-weight-bold">:</td>
                                         <td><span class="font-weight-bold"
-                                                style="font-size:21px">{{ HelperClass::numberToWords($paid_amount) }}
+                                                style="font-size: 19px">{{ HelperClass::numberToWords($paid_amount) }}
                                                 Only
                                             </span></td>
                                     </tr>
-                                  
+                                    <tr>
+                                        <td style="width:450px;" class="font-weight-bold pb-2">Paid Amount With Late Charge
+                                            (Inword)
+                                        </td>
+                                        <td style="width:20px;" class="text-center font-weight-bold">:</td>
+                                        <td><span class="font-weight-bold"
+                                                style="font-size: 19px">{{ HelperClass::numberToWords($paid_amount + round(($bill->Amount / 100) * 10)) }}
+                                                Only
+                                            </span></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="width:450px;" class="font-weight-bold pb-2">Total Payable Amount With
+                                            Late Charge
+                                            (Inword)
+                                        </td>
+                                        <td style="width:20px;" class="text-center font-weight-bold">:</td>
+                                        <td><span class="font-weight-bold"
+                                                style="font-size: 19px">{{ HelperClass::numberToWords($total_payable_with_charge) }}
+                                                Only
+                                            </span></td>
+                                    </tr>
                                 </table>
                             </div>
                         </div>
@@ -221,13 +262,13 @@
                         <div class="row">
                             <div class="col-md-3">
                                 <span>&nbsp;</span>
-                                <hr style="border:none; border-bottom: 1px solid black;">
-                                 <span class="font-weight-bold" style="font-size:21px">Receiver</span>
+                                <hr style="border:none; border-bottom: 1px solid black; width: 200px;">
+                                <span>On behalf of Client Signature</span>
                             </div>
                             <div class="col-md-2 offset-md-7 text-center">
-                               <br>
+                                <span>{{ $bill->CreateBy }}</span>
                                 <hr style="border:none; border-bottom: 1px solid black;">
-                                <span class="font-weight-bold" style="font-size:21px">Authorized</span>
+                                <span>Print By</span>
                             </div>
                         </div>
 
@@ -246,7 +287,7 @@
                     </div>
 
                     @if ($i == 0)
-                        <hr style="border:none;  padding-bottom: 10px;">
+                        <hr style="border:none; border-bottom: 1px dashed black; padding-bottom: 10px;">
                     @endif
 
 

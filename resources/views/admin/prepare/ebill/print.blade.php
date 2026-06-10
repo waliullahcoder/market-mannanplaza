@@ -13,10 +13,10 @@
     }
 
     .bill-copy{
-         margin-top:100px;
+         margin-top:60px;
         width:210mm;
-        height:157mm;
-        padding:10mm 12mm 7mm;
+        height:160mm;
+        /* padding:10mm 12mm 7mm; */
         box-sizing:border-box;
         position:relative;
         font-family:Arial, sans-serif;
@@ -26,7 +26,7 @@
 
     .copy-divider{
         border:0;
-        border-top:1px dashed #000;
+        /* border-top:1px dashed #000; */
         margin:0;
     }
 
@@ -124,7 +124,7 @@
     .signature-row{
         display:grid;
         grid-template-columns:1fr 1fr;
-        margin-top:18mm;
+        margin-top:1mm;
         font-size:15px;
         font-weight:700;
         align-items:end;
@@ -279,18 +279,21 @@
 
         <div>
             <div class="info-grid">
-                <div class="label">Shop No</div><div>:</div><div>{{ $bill['tenant']->Unit ?? '' }}</div>
+                <div class="label">Shop No</div><div>:</div><div>{{ $bill['tenant']->Code ?? '' }}</div>
                 <div class="label">Mobile</div><div>:</div><div>{{ $bill['tenant']->Mobile ?? '' }}</div>
 
                 <div class="label">WP Unit</div><div>:</div><div>{{ isset($bill[1]) ? $bill[1]->PreviousUnit : 0 }}</div>
                 <div class="label">Uses Unit</div><div>:</div><div>{{ isset($bill[1]) ? $bill[1]->UsesUnit : 0 }}</div>
 
-                <div class="label">EP Unit</div><div>:</div><div>{{ isset($bill[0]) ? $bill[0]->PreviousUnit : 0 }}</div>
-                <div class="label">Uses Unit</div><div>:</div><div>{{ isset($bill[0]) ? $bill[0]->UsesUnit : 0 }}</div>
+                
+               
                 <div class="label">WC Unit</div><div>:</div><div>{{ isset($bill[1]) ? $bill[1]->LastUnit : 0 }}</div>
                 <div class="label">W Bill</div><div>:</div><div>{{ isset($bill[1]) ? number_format($bill[1]->Amount, 2) : '0.00' }}</div>
 
+                <div class="label">EP Unit</div><div>:</div><div>{{ isset($bill[0]) ? $bill[0]->PreviousUnit : 0 }}</div>
+
                 <div class="label">EC Unit</div><div>:</div><div>{{ isset($bill[0]) ? $bill[0]->LastUnit : 0 }}</div>
+                 <div class="label">Uses Unit</div><div>:</div><div>{{ isset($bill[0]) ? $bill[0]->UsesUnit : 0 }}</div>
 
                 <div class="label">Total Bill</div><div>:</div>
                 <div><span class="amount-box">{{ number_format($total, 2) }}</span></div>
