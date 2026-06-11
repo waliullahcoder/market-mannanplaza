@@ -279,7 +279,7 @@
 
         <div>
             <div class="info-grid">
-                <div class="label">Shop No</div><div>:</div><div>{{ $bill['tenant']->Code ?? '' }}</div>
+                <div class="label">Shop No</div><div>:</div><div>{{ $code}}</div>
                 <div class="label">Mobile</div><div>:</div><div>{{ $bill['tenant']->Mobile ?? '' }}</div>
 
                 <div class="label">WP Unit</div><div>:</div><div>{{ isset($bill[1]) ? $bill[1]->PreviousUnit : 0 }}</div>
@@ -308,10 +308,10 @@
 
         <div>
             <div class="right-grid">
-                <div class="label">Shop Name</div><div>:</div><div>{{ $bill['tenant']->shop_name ?? $bill['tenant']->Name ?? '' }}</div>
+                <div class="label">Shop Name</div><div>:</div><div>{{ $clientname }}</div>
                 <div class="label">Floor No</div><div>:</div><div>{{ $bill['tenant']->Floor ?? '' }}</div>
-                <div class="label">Client Code</div><div>:</div><div>{{ $bill['tenant']->Code ?? '' }}</div>
-                <div class="label">Client Name</div><div>:</div><div>{{ $bill['tenant']->Name ?? '' }}</div>
+                <div class="label">Client Code</div><div>:</div><div>{{ $code }}</div>
+                <div class="label">Client Name</div><div>:</div><div>{{ $clientname }}</div>
                 <div class="label">EBill + Vat</div><div>:</div><div>{{ isset($bill[0]) ? number_format($bill[0]->Amount, 2) : '0.00' }}</div>
 
                 @if(isset($sbills))

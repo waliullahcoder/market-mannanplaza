@@ -93,7 +93,9 @@ class EbillPrepareController extends Controller
         // fetch service charge
         // $sbills = ServiceChargeCollection::where('CMonth', $parameters[0]->CMonth)
         //     ->where('CYear', $parameters[0]->CYear)->whereIn('Client_Code', $ids)->with(['position_holder'])->get();
-        $sbills = ServiceChargeCollection::where('SerialNo', $id)->get();     
+        $sbills = ServiceChargeCollection::where('SerialNo', $id)->get(); 
+           $code="";
+           $clientname="";
         foreach ($sbills as $key => $sbill) {
             if (!is_null($sbill->position_holder)) {
                 $data->bills[$sbill->position_holder->Code][2] = [$sbill];
@@ -101,9 +103,10 @@ class EbillPrepareController extends Controller
                 $holder_code = PositionInformation::where('Code', $sbill->Client_Code)->first()->Code;
                 $data->bills[$holder_code][2] = [$sbill];
             }
+			$code= $sbill->Client_Code;
+			$clientname=PositionInformation::where('Code', $sbill->Client_Code)->first()->Name;
         }
-
-        return view('admin.prepare.ebill.print', compact(['title', 'sbills','searchFormLink', 'printFormLink', 'data']));
+        return view('admin.prepare.ebill.print', compact(['title', 'sbills','code','clientname','searchFormLink', 'printFormLink', 'data']));
     }
 
     public function add(Request $request)
@@ -164,7 +167,8 @@ class EbillPrepareController extends Controller
 
         $tenants = PositionInformation::where('status', 1)->select(['Code', 'Name'])->get();
 
-        return view('admin.prepare.ebill.add_individual', compact(['tenants', 'title', 'formLink', 'buttonName', 'serial_no']));
+         $rate = SetupRates::where('type', 'ebill')->first()->rate??0;
+        return view('admin.prepare.ebill.add_individual', compact(['tenants','rate', 'title', 'formLink', 'buttonName', 'serial_no']));
     }
 
     public function addReading(Request $request)

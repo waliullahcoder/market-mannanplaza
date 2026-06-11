@@ -48,7 +48,7 @@
                     <div class="col-md-3">
                         <label for="year">Year</label>
                         <select class="form-control select2" id="CYear" name="CYear">
-							<option value="2026">2026</option>
+                            <option value="2026">2026</option>
                             @for ($i = 2000; $i <= 2055; $i++)
                                 <option value="{{ $i }}">{{ $i }}</option>
                             @endfor
@@ -77,6 +77,15 @@
                     <div class="col-md-3">
                         <label for="year">New Reading</label>
                         <input type="number" class="form-control" id="new_reading" name="new_reading" onkeyup="updatePrice()">
+                    </div>
+                    <div class="col-md-3">
+                        <label>Unit</label>
+                        <input type="number" class="form-control" id="unit" readonly>
+                    </div>
+
+                    <div class="col-md-3">
+                        <label>Rate</label>
+                        <input type="number" class="form-control" id="rate" readonly value="{{$rate}}">
                     </div>
 
                     <div class="col-md-3">
@@ -122,6 +131,9 @@
             console.log($('#new_reading').val());
 
             let amount = (+$('#new_reading').val() - +$('#old_reading').val()) * +unitRate;
+            let unit = (+$('#new_reading').val() - +$('#old_reading').val());
+
+            $('#unit').val(unit > 0 ? unit : 0);
 
             $('#amount').val(amount);
 
