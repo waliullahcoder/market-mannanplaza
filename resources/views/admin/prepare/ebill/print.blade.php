@@ -227,8 +227,8 @@
 @php
     $total = 0;
 
-    if(isset($bill[0])) $total += $bill[0]->Amount;
-    if(isset($bill[1])) $total += $bill[1]->Amount;
+    if(isset($electbill)) $total += $electbill->Amount;
+
 
     if(isset($sbills)){
         foreach($sbills as $sb){
@@ -290,10 +290,10 @@
                 <div class="label">WC Unit</div><div>:</div><div>{{ isset($bill[1]) ? $bill[1]->LastUnit : 0 }}</div>
                 <div class="label">W Bill</div><div>:</div><div>{{ isset($bill[1]) ? number_format($bill[1]->Amount, 2) : '0.00' }}</div>
 
-                <div class="label">EP Unit</div><div>:</div><div>{{ isset($bill[0]) ? $bill[0]->PreviousUnit : 0 }}</div>
+                <div class="label">EP Unit</div><div>:</div><div>{{ isset($electbill) ? $electbill->PreviousUnit : 0 }}</div>
 
-                <div class="label">EC Unit</div><div>:</div><div>{{ isset($bill[0]) ? $bill[0]->LastUnit : 0 }}</div>
-                 <div class="label">Uses Unit</div><div>:</div><div>{{ isset($bill[0]) ? $bill[0]->UsesUnit : 0 }}</div>
+                <div class="label">EC Unit</div><div>:</div><div>{{ isset($electbill) ? $electbill->LastUnit : 0 }}</div>
+                 <div class="label">Uses Unit</div><div>:</div><div>{{ isset($electbill) ? $electbill->UsesUnit : 0 }}</div>
 
                 <div class="label">Total Bill</div><div>:</div>
                 <div><span class="amount-box">{{ number_format($total, 2) }}</span></div>
@@ -312,7 +312,7 @@
                 <div class="label">Floor No</div><div>:</div><div>{{ $bill['tenant']->Floor ?? '' }}</div>
                 <div class="label">Client Code</div><div>:</div><div>{{ $code }}</div>
                 <div class="label">Client Name</div><div>:</div><div>{{ $clientname }}</div>
-                <div class="label">EBill + Vat</div><div>:</div><div>{{ isset($bill[0]) ? number_format($bill[0]->Amount, 2) : '0.00' }}</div>
+                <div class="label">EBill + Vat</div><div>:</div><div>{{ isset($electbill) ? number_format($electbill->Amount, 2) : '0.00' }}</div>
 
                 @if(isset($sbills))
                     @foreach($sbills as $sb)

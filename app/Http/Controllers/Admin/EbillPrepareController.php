@@ -106,7 +106,9 @@ class EbillPrepareController extends Controller
 			$code= $sbill->Client_Code;
 			$clientname=PositionInformation::where('Code', $sbill->Client_Code)->first()->Name;
         }
-        return view('admin.prepare.ebill.print', compact(['title', 'sbills','code','clientname','searchFormLink', 'printFormLink', 'data']));
+        $electbill = EbillCollection::where('Client_Code', $code)->with(['position_holder'])->first();
+    
+        return view('admin.prepare.ebill.print', compact(['title', 'sbills','code','clientname','electbill','searchFormLink', 'printFormLink', 'data']));
     }
 
     public function add(Request $request)
