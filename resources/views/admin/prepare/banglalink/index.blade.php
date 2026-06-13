@@ -53,6 +53,7 @@
 
                 @php
                     $message = Session::get('msg');
+                    $message = Session::get('success');
                 @endphp
 
                 @if (isset($message))
@@ -147,13 +148,12 @@
                                             <!-- <a href="{{ route('banglalink.edit', $bill->id) }}">
                                                 <i class="fa fa-print text-success m-r-10"></i>
                                             </a> -->
-                                             <button type="button" class="btn btn-sm btn-primary" onclick="printBill({{ $bill->id }})">
-                                                <i class="fa fa-print text-success m-r-10"></i>Print
-                                            </button>
+                                             <button type="button" class="btn btn-sm" onclick="printBill({{ $bill->id }})">
+                                                <i class="fa fa-print text-success m-r-10"></i></button>
 
-                                            <!-- <a href="javascript:void(0)" data-id="{{ $bill->id }}">
+                                            <a href="javascript:void(0)" data-id="{{ $bill->id }}">
                                                 <i class="fa fa-trash text-danger"></i>
-                                            </a> -->
+                                            </a>
                                         </td>
                                     </tr>
                                 @endforeach

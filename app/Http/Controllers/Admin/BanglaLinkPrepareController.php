@@ -64,18 +64,12 @@ class BanglaLinkPrepareController extends Controller
         $title = 'Edit Sub Meter Bill';
         $formLink = 'sub-meter-bill.update';
         $bill = SubMeterBill::findOrFail($id);
-
-        return view('admin.prepare.banglalink.edit', compact('title', 'formLink', 'bill'));
+        $lastBill = SubMeterBill::latest('id')->first();
+        $clients = PositionInformation::get();
+        $serial_no = $lastBill ? 'BILL-' . str_pad($lastBill->id + 1, 5, '0', STR_PAD_LEFT) : 'BILL-00001';
+        return view('admin.prepare.banglalink.edit', compact('title', 'formLink', 'bill','clients','lastBill'));
     }
-    // public function print($id)
-    // {
-    //     $title = 'Print Sub Meter Bill';
-    //     $formLink = 'sub-meter-bill.update';
-    //     $bill = SubMeterBill::findOrFail($id);
-
-    //     return view('admin.sub_meter_bill.add', compact('title', 'formLink', 'bill'));
-    // }
-
+   
 
     public function update(Request $request, $id)
     {
@@ -91,7 +85,7 @@ class BanglaLinkPrepareController extends Controller
         $bill->update($request->all());
 
         return redirect()
-            ->route('sub-meter-bill.index')
+            ->route('banglalink.index')
             ->with('success', 'Sub Meter Bill Updated Successfully');
     }
 

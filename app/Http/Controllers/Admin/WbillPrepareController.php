@@ -7,6 +7,7 @@ use Carbon\Carbon;
 use App\FloorSetup;
 use App\SetupRates;
 use App\WbillCollection;
+use App\ServiceChargeCollection;
 use App\PositionInformation;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -201,6 +202,7 @@ class WbillPrepareController extends Controller
     public function delete(Request $request)
     {
         WbillCollection::where('serialNo', $request->wbill)->delete();
+		  ServiceChargeCollection::where('serialNo', $request->wbill)->delete();
     }
 
     public function getWbillInfo(Request $request)

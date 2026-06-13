@@ -134,8 +134,29 @@ class ServiceChargePrepareController extends Controller
         $data = (object)[
             'bills' => ServiceChargeCollection::where('serialNo', $id)->with(['position_holder', 'utility'])->get(),
         ];
+         $serial_no = $this->generateSerialNo();
+        $utilities = UtilitySetup::all();
 
-        return view('admin.prepare.service_charge.view', compact(['title', 'data']));
+        $tenants = PositionInformation::where('status', 1)->select(['Code', 'Name'])->get();
+
+        return view('admin.prepare.service_charge.view', compact(['title', 'data','utilities','tenants']));
+    }
+
+    public function billUpdate(Request $request)
+    {
+
+        $bill = ServiceChargeCollection::findOrFail($request->bill_id);
+
+        $bill->Client_Code = $request->client_code;
+        $bill->CMonth = $request->CMonth;
+        $bill->CYear = $request->CYear;
+        $bill->PaidDate = $request->paid_date;
+        $bill->Utility_ID = $request->utility_id;
+        $bill->Amount = $request->amount;
+
+        $bill->save();
+
+        return back()->with('success', 'Bill updated successfully');
     }
 
 

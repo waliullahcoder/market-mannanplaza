@@ -216,6 +216,11 @@
             <button class="btn btn-info" onclick="window.print()">Print</button>
         </div>
     </div>
+	<div class="row">
+        <div class="col-md-2 offset-md-10 text-right">
+            <a  class="btn btn-info" href="{{route('service.charge.prepare')}}" style="padding-left:80%; font-weight:bold;font-decoration:none;font-size:28px">Back</a>
+        </div>
+    </div>
 </div>
 
 <div id="report_div">
@@ -282,13 +287,13 @@
                 <div class="label">Shop No</div><div>:</div><div>{{ $code}}</div>
                 <div class="label">Mobile</div><div>:</div><div>{{ $bill['tenant']->Mobile ?? '' }}</div>
 
-                <div class="label">WP Unit</div><div>:</div><div>{{ isset($bill[1]) ? $bill[1]->PreviousUnit : 0 }}</div>
-                <div class="label">Uses Unit</div><div>:</div><div>{{ isset($bill[1]) ? $bill[1]->UsesUnit : 0 }}</div>
+                <div class="label">WP Unit</div><div>:</div><div>{{ isset($waterbill) ? $waterbill->PreviousUnit : 0 }}</div>
+                <div class="label">Uses Unit</div><div>:</div><div>{{ isset($waterbill) ?$waterbill->UsesUnit : 0 }}</div>
 
                 
                
-                <div class="label">WC Unit</div><div>:</div><div>{{ isset($bill[1]) ? $bill[1]->LastUnit : 0 }}</div>
-                <div class="label">W Bill</div><div>:</div><div>{{ isset($bill[1]) ? number_format($bill[1]->Amount, 2) : '0.00' }}</div>
+                <div class="label">WC Unit</div><div>:</div><div>{{ isset($waterbill) ? $waterbill->LastUnit : 0 }}</div>
+                <div class="label">W Bill</div><div>:</div><div>{{ isset($waterbill) ? number_format($waterbill->Amount, 2) : '0.00' }}</div>
 
                 <div class="label">EP Unit</div><div>:</div><div>{{ isset($electbill) ? $electbill->PreviousUnit : 0 }}</div>
 
@@ -296,7 +301,11 @@
                  <div class="label">Uses Unit</div><div>:</div><div>{{ isset($electbill) ? $electbill->UsesUnit : 0 }}</div>
 
                 <div class="label">Total Bill</div><div>:</div>
-                <div><span class="amount-box">{{ number_format($total, 2) }}</span></div>
+				<?php 
+					$wateramount= isset($waterbill) ? $waterbill->Amount : 0;
+					$total=$total+$wateramount;
+					?>
+                <div><span class="amount-box">{{ number_format(($total), 2) }}</span></div>
             </div>
 
             <div class="word-line">

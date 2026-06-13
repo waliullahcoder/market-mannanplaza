@@ -263,6 +263,9 @@ Route::prefix('admin')->group(function () {
             Route::get('serviceCharge-prepare-view/{id}', 'Admin\ServiceChargePrepareController@view')->name('service.charge.prepare.view');
             Route::post('serviceCharge-prepare-delete', 'Admin\ServiceChargePrepareController@delete')->name('service.charge.prepare.delete');
 
+			Route::post('serviceCharge-prepare-update', 'Admin\ServiceChargePrepareController@billUpdate')->name('service.charge.prepare.update');
+
+
             // collection routes
             Route::get('collection-byCode-add', 'Admin\CollectionController@addbyCode')->name('collection.add.bycode');
             Route::post('collection-byCode-add', 'Admin\CollectionController@savebyCode')->name('collection.save.bycode');
