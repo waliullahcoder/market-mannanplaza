@@ -167,12 +167,6 @@
 
 @foreach($data->jamidari_list as $item)
 
-<button type="button" class="btn btn-sm btn-primary"
-    data-toggle="modal"
-    data-target="#editModal{{ $item->id }}">
-    Edit
-</button>
-
 <div class="modal fade" id="editModal{{ $item->id }}" tabindex="-1">
     <div class="modal-dialog">
         <form action="{{ route('jamidari.prepare.update',$item->id) }}" method="POST">
