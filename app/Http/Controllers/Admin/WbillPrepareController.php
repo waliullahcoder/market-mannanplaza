@@ -186,6 +186,39 @@ class WbillPrepareController extends Controller
         return redirect(route('wbill.prepare.index'))->with('msg', 'Successfully Added');
     }
 
+    public function updateIndividual(Request $request, $id)
+    {
+        $wbill = WbillCollection::findOrFail($id);
+
+        $exists = WbillCollection::where('id', '!=', $id)
+            ->where('CYear', $request->CYear)
+            ->where('CMonth', $request->CMonth)
+            ->where('Client_Code', $wbill->Client_Code)
+            ->first();
+
+        if ($exists) {
+            return back()->with('error', 'Already Added');
+        }
+
+        if ($request->old_reading > $request->new_reading) {
+            return back()->with('error', 'Last unit must be greater than or equal previous unit!');
+        }
+
+        $wbill->update([
+            'CMonth'         => $request->CMonth,
+            'CYear'          => $request->CYear,
+            'Amount'         => $request->amount,
+            'billing_month'  => date('Y-m-d', strtotime('01-' . $request->CMonth . '-' . $request->CYear)),
+            'PreviousUnit'   => $request->old_reading,
+            'LastUnit'       => $request->new_reading,
+            'UsesUnit'       => $request->new_reading - $request->old_reading,
+            'PaidDate'       => date('Y-m-d H:i:s', strtotime($request->paid_date)),
+            'UpdateBy'       => Auth::user()->name,
+        ]);
+
+        return back()->with('msg', 'Successfully Updated');
+    }
+
     public function view($id)
     {
         $title = "View Water Bill";
@@ -202,7 +235,7 @@ class WbillPrepareController extends Controller
     public function delete(Request $request)
     {
         WbillCollection::where('serialNo', $request->wbill)->delete();
-		  ServiceChargeCollection::where('serialNo', $request->wbill)->delete();
+		ServiceChargeCollection::where('serialNo', $request->wbill)->delete();
     }
 
     public function getWbillInfo(Request $request)

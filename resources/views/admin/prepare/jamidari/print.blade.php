@@ -60,8 +60,9 @@
                                 <h3 style="letter-spacing: 3px;font-weight: bold;">{{ $data->project->name }}</h3>
                                 <p>{{ $data->project->address }}</p>
                                 <p>{{ $data->project->contact }}</p>
-                                <p class="font-weight-bold">{{ $bill->position_holder->Unit }}</p>
+                                <p class="font-weight-bold"> {{ optional($bill->position_holder)->Unit ?? '' }}</p>
                                 <p>
+                                   
                                     <span class="font-weight-bold">Pay Circle</span>
                                     <span>{{ $bill->CMonth }} - {{ $bill->CYear }}</span>
                                 </p>
@@ -80,7 +81,7 @@
 
                         <div class="row mt-5">
 
-                            <div class="col-md-4">
+                            <div class="col-md-5">
                                 <table class="table border-0 table-borderless">
                                     <tr class="pb-2">
                                         <td class="font-weight-bold pr-2">Serial No :</td>
@@ -89,7 +90,7 @@
 
                                     <tr class="pb-2">
                                         <td class="font-weight-bold pr-2">Shop/Office Name : </td>
-                                        <td>{{ $bill->position_holder->Code }}</td>
+                                        <td>{{ $bill->position_holder->SName }}</td>
                                     </tr>
                                      <tr class="pb-2">
                                         <td class="font-weight-bold pr-2">Position Holder Name : </td>
@@ -137,20 +138,7 @@
                                 </table>
                             </div>
 
-                            <div class="col-md-4">
-                                <table style="margin-top: 115px;">
-                                    <tr class="pb-2">
-                                        <td class="font-weight-bold pr-2">Year :</td>
-                                        <td>{{ $bill->CYear }}</td>
-                                    </tr>
-
-                                    <tr class="pb-2">
-                                        <td class="font-weight-bold pr-2">Mothly Deduct : </td>
-                                        <td><span class="font-weight-bold"
-                                                style="font-size:21px">{{ $bill->position_holder->MonthlyDeduct }}</span>
-                                        </td>
-                                    </tr>
-                                    @php
+                             @php
                                         $last_month_paid = \App\RentCollection::where('Client_Code', $bill->Client_Code)
                                             ->where('billing_month', '<', date('Y-m-d', strtotime($bill->billing_month)))
                                             ->whereNotNull('ReceiveDate')
@@ -160,10 +148,23 @@
                                             ])
                                             ->sum(DB::raw('Amount + penalty'));
                                     @endphp
+
+                            <div class="col-md-3">
+                                <table style="margin-top: 115px;">
                                     <tr class="pb-2">
-                                        <td class="font-weight-bold pr-2">Last Month Paid : </td>
+                                        <td class="font-weight-bold pr-2">Position No : </td>
+                                        <td><span style="font-size:21px">{{ $bill->position_holder->PositionNo }}</span>
+                                        </td>
+                                    </tr>
+                                    <tr class="pb-2">
+                                        <td class="font-weight-bold pr-2">Year :</td>
+                                        <td style="font-size:21px">{{ $bill->CYear }}</td>
+                                    </tr>
+
+                                    <tr class="pb-2">
+                                        <td class="font-weight-bold pr-2">Mothly Deduct : </td>
                                         <td><span class="font-weight-bold"
-                                                style="font-size:21px">{{ $last_month_paid }}</span>
+                                                style="font-size:21px">{{ $bill->position_holder->MonthlyDeduct }}</span>
                                         </td>
                                     </tr>
                                 </table>
@@ -231,8 +232,7 @@
                             </div>
                         </div>
 
-                        <p class="text-center" style="margin-top:30px">Please pay your bill in date of 10th per month .
-                            Otherwise your Electric Supply will be disconnected. Thank you for your co-operation.</p>
+                        <p class="text-center" style="margin-top:30px">This is a Demo Print, If any advice please mention</p>
 
                         <div class="row" style="margin-top:30px">
                             <div class="col-md-3">

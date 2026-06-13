@@ -133,7 +133,8 @@
                                                 {{ Carbon\Carbon::parse($ebill->PaidDate)->format('(l)') }}
                                             </td>
                                             <td>{{ $ebill->CreateBy }}</td>
-                                            <td>
+                                            <td><i class="fa fa-edit" data-toggle="modal"
+                                                    data-target="#editModal{{ $ebill->id }}"></i>
                                                 @php
                                                     echo \App\Link::action($ebill->SerialNo);
                                                 @endphp
@@ -162,8 +163,108 @@
 
     </div>
     <!-- End Wrapper -->
+ <!-- Modal-->
+@foreach($data->ebill_list as $item)
 
+<div class="modal fade" id="editModal{{ $item->id }}">
+    <div class="modal-dialog modal-lg">
+        <form action="{{ route('ebill.prepare.update.individual',$item->id) }}" method="POST">
+            @csrf
 
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5>Edit E-Bill</h5>
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span>&times;</span>
+                    </button>
+                </div>
+
+                <div class="modal-body">
+
+                    <div class="row">
+
+                        <div class="col-md-6">
+                            <label>Client Code</label>
+                            <input type="text"
+                                   class="form-control"
+                                   value="{{ $item->Client_Code }}"
+                                   readonly>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label>Month</label>
+                            <select name="CMonth" class="form-control">
+                                @foreach(['January','February','March','April','May','June','July','August','September','October','November','December'] as $month)
+                                    <option value="{{ $month }}"
+                                        {{ $item->CMonth == $month ? 'selected' : '' }}>
+                                        {{ $month }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="col-md-6 mt-2">
+                            <label>Year</label>
+                            <select name="CYear" class="form-control">
+                                @for($i=2000;$i<=2055;$i++)
+                                    <option value="{{ $i }}"
+                                        {{ $item->CYear == $i ? 'selected' : '' }}>
+                                        {{ $i }}
+                                    </option>
+                                @endfor
+                            </select>
+                        </div>
+
+                        <div class="col-md-6 mt-2">
+                            <label>Prepare Date</label>
+                            <input type="date"
+                                   name="paid_date"
+                                   class="form-control"
+                                   value="{{ date('Y-m-d',strtotime($item->PaidDate)) }}">
+                        </div>
+
+                        <div class="col-md-4 mt-2">
+                            <label>Old Reading</label>
+                            <input type="number"
+                                   name="old_reading"
+                                   class="form-control"
+                                   value="{{ $item->PreviousUnit }}">
+                        </div>
+
+                        <div class="col-md-4 mt-2">
+                            <label>New Reading</label>
+                            <input type="number"
+                                   name="new_reading"
+                                   class="form-control"
+                                   value="{{ $item->LastUnit }}">
+                        </div>
+
+                        <div class="col-md-4 mt-2">
+                            <label>Amount</label>
+                            <input type="number"
+                                   name="amount"
+                                   class="form-control"
+                                   value="{{ $item->Amount }}">
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-success">
+                        Update
+                    </button>
+                </div>
+
+            </div>
+
+        </form>
+    </div>
+</div>
+
+@endforeach
 
     @include('admin.partials.footer-assets')
 

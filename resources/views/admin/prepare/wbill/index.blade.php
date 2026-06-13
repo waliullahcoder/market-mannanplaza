@@ -128,14 +128,16 @@
 											<td>{{ $wbill->Client_Code }}</td>
                                             <td>{{ $wbill->CMonth }}</td>
                                             <td>{{ $wbill->CYear }}</td>
-                                            <td>{{ $wbill->position_holder->Unit }}</td>
-                                            <td>{{ $wbill->position_holder->Floor }}</td>
+                                             <td>{{ optional($wbill->position_holder)->Unit ?? '' }}</td>
+											<td>{{ optional($wbill->position_holder)->Floor ?? '' }}</td>
                                             <td>{{ Carbon\Carbon::parse($wbill->PaidDate)->format('d-m-Y') }}
                                                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                                                 {{ Carbon\Carbon::parse($wbill->PaidDate)->format('(l)') }}
                                             </td>
                                             <td>{{ $wbill->CreateBy }}</td>
                                             <td>
+                                                <i class="fa fa-edit" data-toggle="modal"
+                                                    data-target="#editModal{{ $wbill->id }}"></i>
                                                 @php
                                                 echo \App\Link::action($wbill->SerialNo);
                                                 @endphp
@@ -165,81 +167,110 @@
     </div>
     <!-- End Wrapper -->
 
+@foreach($data->wbill_list as $item)
 
+<div class="modal fade" id="editModal{{ $item->id }}">
+    <div class="modal-dialog modal-lg">
+        <form action="{{ route('wbill.prepare.update.individual',$item->id) }}" method="POST">
+            @csrf
 
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5>Edit E-Bill</h5>
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span>&times;</span>
+                    </button>
+                </div>
+
+                <div class="modal-body">
+
+                    <div class="row">
+
+                        <div class="col-md-6">
+                            <label>Client Code</label>
+                            <input type="text"
+                                   class="form-control"
+                                   value="{{ $item->Client_Code }}"
+                                   readonly>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label>Month</label>
+                            <select name="CMonth" class="form-control">
+                                @foreach(['January','February','March','April','May','June','July','August','September','October','November','December'] as $month)
+                                    <option value="{{ $month }}"
+                                        {{ $item->CMonth == $month ? 'selected' : '' }}>
+                                        {{ $month }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="col-md-6 mt-2">
+                            <label>Year</label>
+                            <select name="CYear" class="form-control">
+                                @for($i=2000;$i<=2055;$i++)
+                                    <option value="{{ $i }}"
+                                        {{ $item->CYear == $i ? 'selected' : '' }}>
+                                        {{ $i }}
+                                    </option>
+                                @endfor
+                            </select>
+                        </div>
+
+                        <div class="col-md-6 mt-2">
+                            <label>Prepare Date</label>
+                            <input type="date"
+                                   name="paid_date"
+                                   class="form-control"
+                                   value="{{ date('Y-m-d',strtotime($item->PaidDate)) }}">
+                        </div>
+
+                        <div class="col-md-4 mt-2">
+                            <label>Old Reading</label>
+                            <input type="number"
+                                   name="old_reading"
+                                   class="form-control"
+                                   value="{{ $item->PreviousUnit }}">
+                        </div>
+
+                        <div class="col-md-4 mt-2">
+                            <label>New Reading</label>
+                            <input type="number"
+                                   name="new_reading"
+                                   class="form-control"
+                                   value="{{ $item->LastUnit }}">
+                        </div>
+
+                        <div class="col-md-4 mt-2">
+                            <label>Amount</label>
+                            <input type="number"
+                                   name="amount"
+                                   class="form-control"
+                                   value="{{ $item->Amount }}">
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-success">
+                        Update
+                    </button>
+                </div>
+
+            </div>
+
+        </form>
+    </div>
+</div>
+
+@endforeach
     @include('admin.partials.footer-assets')
 
     <script>
-        $(document).ready(function() {
-            var updateThis;
-
-            //ajax delete code
-            $('#dtb tbody').on('click', 'i.fa-trash', function() {
-                $.ajaxSetup({
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    }
-                });
-
-                let ebill = $(this).parent().data('id');
-                var tableRow = this;
-                swal({
-                        title: "Are you sure?",
-                        text: "You will not be able to recover this information!",
-                        type: "warning",
-                        showCancelButton: true,
-                        confirmButtonColor: "#DD6B55",
-                        confirmButtonText: "Yes, delete it!",
-                        cancelButtonText: "No, cancel plx!",
-                        closeOnConfirm: false,
-                        closeOnCancel: false
-                    },
-                    function(isConfirm) {
-                        if (isConfirm) {
-                            $.ajax({
-                                type: "POST",
-                                url: "{{ route('wbill.prepare.delete') }}",
-                                data: {
-                                    ebill: ebill
-                                },
-
-                                success: function(response) {
-                                    swal({
-                                        title: "<small class='text-success'>Success!</small>",
-                                        type: "success",
-                                        text: "Deleted Successfully!",
-                                        timer: 1000,
-                                        html: true,
-                                    });
-                                    $('.row_' + ebill).remove();
-                                },
-                                error: function(response) {
-                                    error = "Failed.";
-                                    swal({
-                                        title: "<small class='text-danger'>Error!</small>",
-                                        type: "error",
-                                        text: error,
-                                        timer: 1000,
-                                        html: true,
-                                    });
-                                }
-                            });
-                        } else {
-                            swal({
-                                title: "Cancelled",
-                                type: "error",
-                                text: "This Data Is Safe :)",
-                                timer: 1000,
-                                html: true,
-                            });
-                        }
-                    });
-            });
-        });
-
-    </script>
-
-    {{-- <script>
         $(document).ready(function() {
             var updateThis;
 
@@ -307,40 +338,7 @@
             });
         });
 
-        //ajax status change code
-        // function statusChange(position) {
-        //     $.ajax({
-        //         headers: {
-        //             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        //         },
-        //         type: "post",
-        //         url: "{{ route('positionInformation.status') }}",
-        //         data: {
-        //             position: position
-        //         },
-        //         success: function(response) {
-        //             swal({
-        //                 title: "<small class='text-success'>Success!</small>",
-        //                 type: "success",
-        //                 text: "Status Successfully Updated!",
-        //                 timer: 1000,
-        //                 html: true,
-        //             });
-        //         },
-        //         error: function(response) {
-        //             error = "Failed.";
-        //             swal({
-        //                 title: "<small class='text-danger'>Error!</small>",
-        //                 type: "error",
-        //                 text: error,
-        //                 timer: 2000,
-        //                 html: true,
-        //             });
-        //         }
-        //     });
-        // }
-
-    </script> --}}
+    </script>
 
 </body>
 

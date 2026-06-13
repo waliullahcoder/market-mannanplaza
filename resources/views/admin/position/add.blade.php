@@ -40,9 +40,9 @@
             </div>
 
             <div class="col-md-4">
-                <label for="SName">Spouse Name</label>
+                <label for="SName">Shop Name</label>
                 <div class="form-group {{ $errors->has('SName') ? ' has-danger' : '' }}">
-                    <input type="text" class="form-control" placeholder="Spouse Name" name="SName"
+                    <input type="text" class="form-control" placeholder="Shop Name" name="SName"
                         value="{{ old('SName') }}">
                 </div>
             </div>

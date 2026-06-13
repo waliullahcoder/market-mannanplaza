@@ -284,8 +284,8 @@
 
         <div>
             <div class="info-grid">
-                <div class="label">Shop No</div><div>:</div><div>{{ $code}}</div>
-                <div class="label">Mobile</div><div>:</div><div>{{ $bill['tenant']->Mobile ?? '' }}</div>
+                <div class="label">Shop No</div><div>:</div><div>{{ preg_match('/(\d+)$/', $code, $matches) ? $matches[1] : '' }}</div>
+                <div class="label">Mobile</div><div>:</div><div>{{ $client->Mobile ?? '-' }}</div>
 
                 <div class="label">WP Unit</div><div>:</div><div>{{ isset($waterbill) ? $waterbill->PreviousUnit : 0 }}</div>
                 <div class="label">Uses Unit</div><div>:</div><div>{{ isset($waterbill) ?$waterbill->UsesUnit : 0 }}</div>
@@ -317,7 +317,7 @@
 
         <div>
             <div class="right-grid">
-                <div class="label">Shop Name</div><div>:</div><div>{{ $clientname }}</div>
+                <div class="label">Shop Name</div><div>:</div><div>{{ $client->SName??'-' }}</div>
                 <div class="label">Floor No</div><div>:</div><div>{{ $bill['tenant']->Floor ?? '' }}</div>
                 <div class="label">Client Code</div><div>:</div><div>{{ $code }}</div>
                 <div class="label">Client Name</div><div>:</div><div>{{ $clientname }}</div>
@@ -351,7 +351,7 @@
     <div class="notice">
         Please pay your bill in appropriate time. Otherwise your Electric Supply will be disconnected.
     </div>
-    <div class="thanks">Thank you for your co-operation.</div>
+    <div class="thanks">This is a Demo Print, If any advice please mention</div>
 
 </div>
 

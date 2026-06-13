@@ -133,6 +133,8 @@
                                             </td>
                                             <td>{{ $jamidari->CreateBy }}</td>
                                             <td>
+                                                <i class="fa fa-edit" data-toggle="modal"
+                                                    data-target="#editModal{{ $jamidari->id }}"></i>
                                                 @php
                                                     echo \App\Link::action($jamidari->SerialNo);
                                                 @endphp
@@ -161,7 +163,93 @@
 
     </div>
     <!-- End Wrapper -->
+<!--Edit Modal-->
 
+@foreach($data->jamidari_list as $item)
+
+<button type="button" class="btn btn-sm btn-primary"
+    data-toggle="modal"
+    data-target="#editModal{{ $item->id }}">
+    Edit
+</button>
+
+<div class="modal fade" id="editModal{{ $item->id }}" tabindex="-1">
+    <div class="modal-dialog">
+        <form action="{{ route('jamidari.prepare.update',$item->id) }}" method="POST">
+            @csrf
+
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Rent Collection</h5>
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span>&times;</span>
+                    </button>
+                </div>
+
+                <div class="modal-body">
+
+                    <div class="form-group">
+                        <label>Client Code</label>
+                        <input type="text"
+                               class="form-control"
+                               value="{{ $item->Client_Code }}"
+                               readonly>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Month</label>
+                        <select name="CMonth" class="form-control">
+                            @foreach([
+                                'January','February','March','April','May','June',
+                                'July','August','September','October','November','December'
+                            ] as $month)
+                                <option value="{{ $month }}"
+                                    {{ $item->CMonth == $month ? 'selected' : '' }}>
+                                    {{ $month }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Year</label>
+                        <input type="number"
+                               name="CYear"
+                               class="form-control"
+                               value="{{ $item->CYear }}">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Amount</label>
+                        <input type="number"
+                               name="amount"
+                               class="form-control"
+                               value="{{ $item->Amount }}">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Paid Date</label>
+                        <input type="date"
+                               name="paid_date"
+                               class="form-control"
+                               value="{{ date('Y-m-d',strtotime($item->PaidDate)) }}">
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-success">
+                        Update
+                    </button>
+                </div>
+
+            </div>
+        </form>
+    </div>
+</div>
+
+@endforeach
+<!--Edit modal end-->
 
 
     @include('admin.partials.footer-assets')

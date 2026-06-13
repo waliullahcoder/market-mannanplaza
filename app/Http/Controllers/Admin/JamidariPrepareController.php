@@ -133,6 +133,43 @@ class JamidariPrepareController extends Controller
         return redirect(route('jamidari.prepare.index'));
     }
 
+    public function updateIndividual(Request $request, $id)
+    {
+        $collection = RentCollection::findOrFail($id);
+
+        $client = PositionInformation::where(
+            'Code',
+            $collection->Client_Code
+        )->first();
+
+        $exists = RentCollection::where('id', '!=', $id)
+            ->where('CYear', $request->CYear)
+            ->where('CMonth', $request->CMonth)
+            ->where('Client_Code', $collection->Client_Code)
+            ->first();
+
+        if ($exists) {
+            return back()->with('error', 'Already Added');
+        }
+
+        $collection->update([
+            'CMonth' => $request->CMonth,
+            'CYear' => $request->CYear,
+            'billing_month' => date(
+                'Y-m-d',
+                strtotime('01-'.$request->CMonth.'-'.$request->CYear)
+            ),
+            'Amount' => $request->amount - ($client->MonthlyDeduct ?? 0),
+            'PaidDate' => date(
+                'Y-m-d H:i:s',
+                strtotime($request->paid_date)
+            ),
+            'UpdateBy' => Auth::user()->name,
+        ]);
+
+        return back()->with('msg', 'Successfully Updated');
+    }
+
     public function view($id)
     {
         $title = "Jamidari Collection View";
