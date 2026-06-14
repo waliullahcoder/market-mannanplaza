@@ -62,7 +62,6 @@
                             <th>Year</th>
                             <th>Type</th>
                             <th>Amount</th>
-                            <th>Penalty</th>
                             <th>
                                 <input type="checkbox" name="all" id="all">
                             </th>
@@ -72,10 +71,8 @@
                                 <tr id="tr_{{ $bill->id }}">
                                     <td>{{ $bill->CMonth }}</td>
                                     <td>{{ $bill->CYear }}</td>
-                                    <td>{{ $classToNormal[$bill->CLASS_NAME] }}</td>
-                                    <td>{{ $bill->Amount }}</td>
+                                   
                                     @php
-                                        $penalty = 0;
                                         $now = date('Y-m-d');
                                         $startDate = date('2024-03-15');
                                         $lastDate = new Carbon(date('Y-m-d', strtotime('10-' . $bill->CMonth . '-' . $bill->CYear)));
@@ -88,24 +85,21 @@
                                                 $lastDate = $lastDate->addMonths(1);
                                             }
                                         }
-
-                                        if (strtotime($now) > strtotime($lastDate) && strtotime($lastDate) > strtotime($startDate)) {
-                                            $penalty = round(($bill->Amount / 100) * 10);
-                                        }
                                     @endphp
-                                    <td>
-                                        <input type="hidden" id="penalty_{{ $bill->id }}"
-                                            value="{{ $penalty }}">
-                                        {{ $penalty }}
+                                     <td>
+                                        @if ($bill->CLASS_NAME == 'App\ServiceChargeCollection')
+                                            {{ optional($bill->utility)->name }}
+                                        @else
+                                            {{ $classToNormal[$bill->CLASS_NAME] }}
+                                        @endif
                                     </td>
+                                    <td>{{ $bill->Amount }}</td>
                                     <td>
                                         <input type="checkbox" class="checked_inputs" name="ids[]"
                                             value="{{ $bill->id }}" amount="{{ $bill->Amount }}">
                                         <input type="hidden" name="class_name[{{ $bill->id }}]"
                                             value="{{ $bill->CLASS_NAME }}">
-                                        {{-- <input type="checkbox" class="checked_inputs" name="ids[]" value="{{ $bill->id }}"> --}}
-                                        {{-- <input type="hidden" name="amount[{{ $bill->id }}]"
-                                            id="amount_{{ $bill->id }}" value="{{ $bill->Amount }}"> --}}
+                                       
                                     </td>
                                 </tr>
                             @endforeach
@@ -162,8 +156,7 @@
                 $('.checked_inputs:checkbox:checked').each(function() {
                     let valueEl = $(this);
                     var id = $(this).val();
-                    var penalty = +$('#penalty_' + id).val();
-                    amount += +valueEl.attr('amount') + penalty;
+                    amount += +valueEl.attr('amount');
                 });
                 totalInputEl.val(amount);
             }

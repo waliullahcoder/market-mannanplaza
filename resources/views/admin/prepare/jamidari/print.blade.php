@@ -85,7 +85,7 @@
                                 <table class="table border-0 table-borderless">
                                     <tr class="pb-2">
                                         <td class="font-weight-bold pr-2">Serial No :</td>
-                                        <td>{{ $bill->SerialNo }}</td>
+                                        <td>{{ $bill->Client_Code }}</td>
                                     </tr>
 
                                     <tr class="pb-2">
