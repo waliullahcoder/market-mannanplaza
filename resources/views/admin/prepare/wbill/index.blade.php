@@ -128,7 +128,7 @@
 											<td>{{ $wbill->Client_Code }}</td>
                                             <td>{{ $wbill->CMonth }}</td>
                                             <td>{{ $wbill->CYear }}</td>
-                                             <td>{{ optional($wbill->position_holder)->Unit ?? '' }}</td>
+                                            <td>{{ optional($wbill->position_holder)->Unit ?? '' }}</td>
 											<td>{{ optional($wbill->position_holder)->Floor ?? '' }}</td>
                                             <td>{{ Carbon\Carbon::parse($wbill->PaidDate)->format('d-m-Y') }}
                                                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;

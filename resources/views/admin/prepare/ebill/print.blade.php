@@ -303,9 +303,9 @@
                 <div class="label">Total Bill</div><div>:</div>
 				<?php 
 					$wateramount= isset($waterbill) ? $waterbill->Amount : 0;
-					$total=$total+$wateramount;
+					$net_total=$total+$wateramount;
 					?>
-                <div><span class="amount-box">{{ number_format(($total), 2) }}</span></div>
+                <div><span class="amount-box">{{ number_format(($net_total), 2) }}</span></div>
             </div>
 
             <div class="word-line">
