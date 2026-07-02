@@ -110,9 +110,10 @@
                                     <span class="font-weight-bold float-right mt-2">Receive Date</span>
                                 </td>
                                 <td>
-                                    <input type="text" class="form-control" readonly value="{{ date('d-m-Y') }}"
+                                     <input type="text" name="receive_date" class="form-control add_datepicker">
+                                    <!-- <input type="date" class="form-control" value="{{ date('d-m-Y') }}"
                                         style="opacity: 1 !important;">
-                                    <input type="text" name="receive_date" class="form-control d-none add_datepicker">
+                                    <input type="text" name="receive_date" class="form-control d-none add_datepicker"> -->
                                 </td>
                                 <td>
                                     <span class="font-weight-bold float-right mt-2">Total</span>

@@ -66,7 +66,7 @@ class ServiceChargePrepareController extends Controller
             $serial_no = $this->generateSerialNo();
 
             $lastbills = ServiceChargeCollection::where('CYear', $last_bill_dates->CYear)->where('CMonth', $last_bill_dates->CMonth)->get();
-
+           // dd("DDD",$last_bill_dates->CYear,$last_bill_dates->CMonth,$lastbills);
             foreach ($lastbills as $lastbill) {
                 ServiceChargeCollection::create([
                     'Client_Code' => $lastbill->Client_Code,

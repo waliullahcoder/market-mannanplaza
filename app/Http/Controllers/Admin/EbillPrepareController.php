@@ -123,9 +123,9 @@ class EbillPrepareController extends Controller
         ->with('position_holder')
         ->get();
 
-    if ($parameters->isEmpty()) {
-        return back()->with('error', 'No Bill Found For Serial No : ' . $id);
-    }
+    // if ($parameters->isEmpty()) {
+    //     return back()->with('error', 'No Bill Found For Serial No : ' . $id);
+    // }
 
     $firstParameter = $parameters->first();
 
@@ -164,23 +164,30 @@ class EbillPrepareController extends Controller
     }
 
     // Water Bill
-    $wbills = WbillCollection::where('CMonth', $firstParameter->CMonth)
+    if($firstParameter){
+      $wbills = WbillCollection::where('CMonth', $firstParameter->CMonth)
         ->where('CYear', $firstParameter->CYear)
         ->whereIn('Client_Code', $ids)
         ->with('position_holder')
         ->get();
+         foreach ($wbills as $wbill) {
 
-    foreach ($wbills as $wbill) {
+                if (!$wbill->position_holder) {
+                    continue;
+                }
 
-        if (!$wbill->position_holder) {
-            continue;
+                $data->bills[$wbill->position_holder->Code][1] = $wbill;
+            }
+        }else{
+            $wbills =[];
         }
 
-        $data->bills[$wbill->position_holder->Code][1] = $wbill;
-    }
+   $sbill = ServiceChargeCollection::where('SerialNo', $id)->first();
+   
 
     // Service Charge
-    $sbills = ServiceChargeCollection::where('SerialNo', $id)->get();
+    $sbills = ServiceChargeCollection::where('CMonth', $sbill->CMonth)
+        ->where('CYear', $sbill->CYear)->where('SerialNo', $id)->get();
 
     $code = '';
     $clientname = '';
@@ -217,20 +224,18 @@ class EbillPrepareController extends Controller
     $electbill = null;
     $waterbill = null;
 
-    if (!empty($code)) {
+    // if (!empty($code)) {
 
-        $client = PositionInformation::where('Code', $code)->first();
+    //     $client = PositionInformation::where('Code', $code)->first();
 
-        $electbill = EbillCollection::where('Client_Code', $code)
-            ->with('position_holder')
-            ->latest('id')
-            ->first();
-
-        $waterbill = WbillCollection::where('Client_Code', $code)
-            ->with('position_holder')
-            ->latest('id')
-            ->first();
-    }
+    //     $electbill = EbillCollection::where('Client_Code', $code)
+    //         ->with('position_holder')
+    //         ->first();
+    //     $waterbill = WbillCollection::where('Client_Code', $code)
+    //         ->with('position_holder')
+    //         ->latest('id')
+    //         ->first();
+    // }
 
     return view(
         'admin.prepare.ebill.print',

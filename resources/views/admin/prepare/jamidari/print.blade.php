@@ -60,7 +60,7 @@
                                 <h3 style="letter-spacing: 3px;font-weight: bold;">{{ $data->project->name }}</h3>
                                 <p>{{ $data->project->address }}</p>
                                 <p>{{ $data->project->contact }}</p>
-                                <p class="font-weight-bold"> {{ optional($bill->position_holder)->Unit ?? '' }}</p>
+                                <p class="font-weight-bold">Prepared By: {{ $bill->CreateBy ?? '' }}</p>
                                 <p>
                                    
                                     <span class="font-weight-bold">Pay Circle</span>

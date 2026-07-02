@@ -43,7 +43,8 @@
                     <div class="col-md-6">
                         <label for="year">Year</label>
                         <select name="CYear" class="form-control select2" id="year">
-                            @for ($i = 2015; $i <= 2055; $i++)
+                            <option value="2026">2026</option>
+                            @for ($i = 2000; $i <= 2055; $i++)
                                 <option value="{{ $i }}">{{ $i }}</option>
                             @endfor
                         </select>

@@ -184,7 +184,9 @@
             size:A4 portrait;
             margin:0;
         }
-
+        /* .info-grid{
+          font-size:26px;
+        } */
         body{
             margin:0 !important;
             background:#fff !important;
@@ -226,21 +228,34 @@
 <div id="report_div">
 
 @if(count($data->bills) > 0)
-
-@foreach(array_slice($data->bills, 0, 1) as $bill)
-
+@foreach($data->bills as $code => $bill)
 @php
+       
     $total = 0;
 
+
+
+   
+    $cmonth="-";
+    $cyear="-";
+    $createdby="-";
+    $billing_month="-";
+     foreach ($bill as $items) {
+            foreach ($items as $collection) {
+                $total += $collection->Amount;
+                $cyear = $collection->CYear;
+                $cmonth = $collection->CMonth;
+                $createdby = $collection->CreateBy;
+                $billing_month = $collection->billing_month;
+            }
+        }
+    $waterbill = App\WbillCollection::where('Client_Code', $code)->first();
+    $electbill = App\EbillCollection::where('Client_Code', $code)->first();
+    
     if(isset($electbill)) $total += $electbill->Amount;
 
-
-    if(isset($sbills)){
-        foreach($sbills as $sb){
-            $total += $sb->Amount;
-        }
-    }
-
+        $collections = collect($bill)->flatten(1);
+        $first = $collections->first();
     $copies = ['Office Copy', 'Client Copy'];
 @endphp
 
@@ -261,11 +276,14 @@
             <p>{{ $data->project->address }}</p>
             <p>Ph- {{ $data->project->contact }}</p>
             <p>
-                Pay Circle :
-                @if(isset($bill[0]) && $bill[0] != null)
-                    {{ $bill[0]->CMonth }}, {{ $bill[0]->CYear }}
-                @endif
+                Pay Circle : {{$cmonth}}-{{$cyear}} ({{ date('d-F-Y', strtotime($billing_month)) }})
             </p>
+             <div class="row">
+                            <div class="col-md-3">
+                                <span>Prepared By: {{$createdby}}, Print Date: {{ date('d-F-Y', strtotime(now())) }}, Time: {{ date('h:i:s a', strtotime(now())) }}</span>
+                            </div>
+                            
+                        </div>
         </div>
 
         <div>
@@ -285,19 +303,19 @@
         <div>
             <div class="info-grid">
                 <div class="label">Shop No</div><div>:</div><div>{{ preg_match('/(\d+)$/', $code, $matches) ? $matches[1] : '' }}</div>
-                <div class="label">Mobile</div><div>:</div><div>{{ $client->Mobile ?? '-' }}</div>
+                <div class="label">Mobile</div><div>:</div><div>{{ $first->position_holder->Mobile??'-' }}</div>
 
+                <div class="label">WC Unit</div><div>:</div><div>{{ isset($waterbill) ? $waterbill->LastUnit : 0 }}</div>
                 <div class="label">WP Unit</div><div>:</div><div>{{ isset($waterbill) ? $waterbill->PreviousUnit : 0 }}</div>
                 <div class="label">Uses Unit</div><div>:</div><div>{{ isset($waterbill) ?$waterbill->UsesUnit : 0 }}</div>
 
                 
                
-                <div class="label">WC Unit</div><div>:</div><div>{{ isset($waterbill) ? $waterbill->LastUnit : 0 }}</div>
                 <div class="label">W Bill</div><div>:</div><div>{{ isset($waterbill) ? number_format($waterbill->Amount, 2) : '0.00' }}</div>
 
-                <div class="label">EP Unit</div><div>:</div><div>{{ isset($electbill) ? $electbill->PreviousUnit : 0 }}</div>
 
                 <div class="label">EC Unit</div><div>:</div><div>{{ isset($electbill) ? $electbill->LastUnit : 0 }}</div>
+                <div class="label">EP Unit</div><div>:</div><div>{{ isset($electbill) ? $electbill->PreviousUnit : 0 }}</div>
                  <div class="label">Uses Unit</div><div>:</div><div>{{ isset($electbill) ? $electbill->UsesUnit : 0 }}</div>
 
                 <div class="label">Total Bill</div><div>:</div>
@@ -317,16 +335,20 @@
 
         <div>
             <div class="right-grid">
-                <div class="label">Shop Name</div><div>:</div><div>{{ $client->SName??'-' }}</div>
-                <div class="label">Floor No</div><div>:</div><div>{{ $bill['tenant']->Floor ?? '' }}</div>
+                <div class="label">Shop Name</div><div>:</div><div>{{ $first->position_holder->SName??'-' }}</div>
+                <div class="label">Floor No</div><div>:</div><div>{{ $first->position_holder->Floor??'-' }}</div>
                 <div class="label">Client Code</div><div>:</div><div>{{ $code }}</div>
-                <div class="label">Client Name</div><div>:</div><div>{{ $clientname }}</div>
+                <div class="label">Client Name</div><div>:</div><div>{{ $first->position_holder->Name??'-' }}</div>
                 <div class="label">EBill + Vat</div><div>:</div><div>{{ isset($electbill) ? number_format($electbill->Amount, 2) : '0.00' }}</div>
 
-                @if(isset($sbills))
-                    @foreach($sbills as $sb)
-                        <div class="label">{{ $sb->utility->name }}</div><div>:</div>
-                        <div>{{ number_format($sb->Amount, 2) }}</div>
+               
+
+                @if(isset($bill))
+                 @foreach ($bill as $items) 
+                    @foreach ($items as $collection) 
+                        <div class="label">{{ $collection->utility->name }}</div><div>:</div>
+                        <div>{{ number_format($collection->Amount, 2) }}</div>
+                        @endforeach
                     @endforeach
                 @endif
             </div>
