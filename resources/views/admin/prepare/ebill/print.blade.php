@@ -232,28 +232,32 @@
 @php
        
     $total = 0;
-
-
-
-   
     $cmonth="-";
     $cyear="-";
     $createdby="-";
     $billing_month="-";
-     foreach ($bill as $items) {
-            foreach ($items as $collection) {
-                $total += $collection->Amount;
-                $cyear = $collection->CYear;
-                $cmonth = $collection->CMonth;
-                $createdby = $collection->CreateBy;
-                $billing_month = $collection->billing_month;
+   $collections = collect($bill)->flatten();
+        foreach ($collections as $collection) {
+            if (!is_object($collection)) {
+                continue;
             }
+            $total += $collection->Amount ?? 0;
+            $cyear = $collection->CYear ?? '-';
+            $cmonth = $collection->CMonth ?? '-';
+            $createdby = $collection->CreateBy ?? '-';
+            $billing_month = $collection->billing_month ?? '-';
         }
     $waterbill = App\WbillCollection::where('Client_Code', $code)->first();
     $electbill = App\EbillCollection::where('Client_Code', $code)->first();
+    if(isset($electbill) && $cmonth=="-"){
+        $cmonth = $electbill->CMonth;
+        $cyear = $electbill->CYear;
+    }
+    $servicebills = App\ServiceChargeCollection::where('Client_Code', $code)->where('CMonth', $cmonth)->where('CYear', $cyear)->get();
     
-    if(isset($electbill)) $total += $electbill->Amount;
-
+    if ($electbill && isset($electbill->Amount)) {
+        $total += $electbill->Amount;
+    }
         $collections = collect($bill)->flatten(1);
         $first = $collections->first();
     $copies = ['Office Copy', 'Client Copy'];
@@ -343,12 +347,10 @@
 
                
 
-                @if(isset($bill))
-                 @foreach ($bill as $items) 
-                    @foreach ($items as $collection) 
-                        <div class="label">{{ $collection->utility->name }}</div><div>:</div>
-                        <div>{{ number_format($collection->Amount, 2) }}</div>
-                        @endforeach
+                @if(isset($servicebills))
+                    @foreach ($servicebills as $sbill) 
+                        <div class="label">{{ $sbill->utility->name }}</div><div>:</div>
+                        <div>{{ number_format($sbill->Amount, 2) }}</div>
                     @endforeach
                 @endif
             </div>
@@ -371,7 +373,7 @@
     </div>
 
     <div class="notice">
-        Please pay your bill in appropriate time. Otherwise your Electric Supply will be disconnected.
+        Please pay on time. Otherwise, your electricity will be disconnected.
     </div>
     <div class="thanks">This is a Demo Print, If any advice please mention</div>
 
