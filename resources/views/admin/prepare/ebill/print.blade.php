@@ -178,6 +178,9 @@
         font-size:13px;
         font-style:italic;
     }
+    .right-grid,.info-grid{
+            font-size:19px;
+        }
 
     @media print{
         @page{
@@ -190,6 +193,9 @@
         body{
             margin:0 !important;
             background:#fff !important;
+        }
+          .right-grid,.info-grid{
+            font-size:19px;
         }
 
         .noprint,
@@ -204,6 +210,7 @@
             height:297mm;
             page-break-after:always;
         }
+        
 
         .bill-copy{
             page-break-inside:avoid;
@@ -236,7 +243,7 @@
     $cyear="-";
     $createdby="-";
     $billing_month="-";
-   $collections = collect($bill)->flatten();
+    $collections = collect($bill)->flatten();
         foreach ($collections as $collection) {
             if (!is_object($collection)) {
                 continue;
@@ -252,6 +259,7 @@
     if(isset($electbill) && $cmonth=="-"){
         $cmonth = $electbill->CMonth;
         $cyear = $electbill->CYear;
+        $createdby = $electbill->CreateBy;
     }
     $servicebills = App\ServiceChargeCollection::where('Client_Code', $code)->where('CMonth', $cmonth)->where('CYear', $cyear)->get();
     
@@ -284,7 +292,7 @@
             </p>
              <div class="row">
                             <div class="col-md-3">
-                                <span>Prepared By: {{$createdby}}, Print Date: {{ date('d-F-Y', strtotime(now())) }}, Time: {{ date('h:i:s a', strtotime(now())) }}</span>
+                                <span>Created By: {{$createdby}}, Print Date: {{ date('d-F-Y', strtotime(now())) }}, Time: {{ date('h:i:s a', strtotime(now())) }}</span>
                             </div>
                             
                         </div>
@@ -358,15 +366,15 @@
 
     </div>
 
-    <div class="signature-row">
+    <div class="signature-row" style="margin-top:20px;">
         <div>
             <div class="signature-line">On behalf of Client Signature</div>
         </div>
 
         <div class="signature-right">
-            <img class="signature-img"
+            <!-- <img class="signature-img"
                  src="{{ asset('public/elite-admin/assets/images/signature.png') }}"
-                 alt="Signature">
+                 alt="Signature"> -->
 
             <div class="signature-line">Authorize Signature</div>
         </div>
