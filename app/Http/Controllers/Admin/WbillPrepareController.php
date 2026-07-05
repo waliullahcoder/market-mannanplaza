@@ -247,7 +247,7 @@ class WbillPrepareController extends Controller
             if ($last_unit == null) {
                 $last_unit = $last_unit['LastUnit'] = 0;
             }
-         
+
             // get ebill rates
             $rate = SetupRates::where('type', 'wbill')->first()->rate;
 
