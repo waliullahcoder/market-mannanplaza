@@ -8,6 +8,7 @@ use App\ServiceChargeCollection;
 use App\Http\Controllers\Controller;
 use App\PositionInformation;
 use App\UtilitySetup;
+use App\FloorSetup;
 use Illuminate\Support\Facades\Auth;
 
 class ServiceChargePrepareController extends Controller
@@ -39,8 +40,9 @@ class ServiceChargePrepareController extends Controller
         $buttonName = "Auto Service Charge Posting";
         $serial_no = $this->generateSerialNo();
         $utilities = UtilitySetup::all();
-
-        return view('admin.prepare.service_charge.add_auto', compact(['title', 'formLink', 'buttonName', 'serial_no', 'utilities']));
+        $floors= FloorSetup::select(['name'])->get();
+        $bills=[];
+        return view('admin.prepare.service_charge.add_auto', compact(['title','floors', 'formLink', 'buttonName', 'serial_no', 'utilities','bills']));
     }
 
     public function addindividual()
@@ -58,23 +60,51 @@ class ServiceChargePrepareController extends Controller
 
     public function save(Request $request)
     {
-        $alreadyHave = ServiceChargeCollection::where('CYear', $request->CYear)->where('CMonth', $request->CMonth)->get();
+        
+        $alreadyHave = ServiceChargeCollection::where('CYear', $request->CYear)->where('CMonth', $request->CMonth)->where('PositionNo', $request->floor)->get();
+        
+        if(isset($request->action) && ($request->action == 'search') && count($alreadyHave) == 0){
+            $last_bill_dates = ServiceChargeCollection::orderBy('id', 'desc')->select(['CMonth', 'CYear'])->where('PositionNo', $request->floor)->first();
+            if($last_bill_dates){
+            $bills = ServiceChargeCollection::where('CYear', $last_bill_dates->CYear)->where('CMonth', $last_bill_dates->CMonth)->where('PositionNo', $request->floor)->get()->groupBy('Client_Code');
+            }else{
+                $bills=[];
+              return back()->with('errorMesg', "Sorry! No records were found for this floor. Please enter the previous month's data first.");
+            }
+            $title = "Prepare Service Charge";
+            $formLink = "service.charge.prepare.save";
+            $buttonName = "Auto Service Charge Posting";
+            $serial_no = $this->generateSerialNo();
+            $utilities = UtilitySetup::all();
+            $floors= FloorSetup::select(['name'])->get();
+            $cmonth=$request->CMonth ??"";
+            $cyear=$request->CYear ??"";
+            return view('admin.prepare.service_charge.add_auto', compact(['title','floors', 'formLink', 'buttonName', 'serial_no', 'utilities','bills','cmonth','cyear']));
+        }
+        if(count($alreadyHave)>0){
+            return back()->with('errorMesg', 'Already Posted Entry of this requested Month!');
+        }
 
         if (count($alreadyHave) == 0) {
             // get last month data
-            $last_bill_dates = ServiceChargeCollection::orderBy('id', 'desc')->select(['CMonth', 'CYear'])->first();
+            $last_bill_dates = ServiceChargeCollection::orderBy('id', 'desc')->select(['CMonth', 'CYear'])->where('PositionNo', $request->floor)->first();
             $serial_no = $this->generateSerialNo();
 
-            $lastbills = ServiceChargeCollection::where('CYear', $last_bill_dates->CYear)->where('CMonth', $last_bill_dates->CMonth)->get();
+            $lastbills = ServiceChargeCollection::where('CYear', $last_bill_dates->CYear)->where('CMonth', $last_bill_dates->CMonth)->where('PositionNo', $request->floor)->get();
            // dd("DDD",$last_bill_dates->CYear,$last_bill_dates->CMonth,$lastbills);
             foreach ($lastbills as $lastbill) {
+                $amount = ($lastbill->Utility_ID == 4 && $request->passage_charge != null)
+                                ? $request->passage_charge
+                                : (($lastbill->Utility_ID == 7 && $request->service_charge != null)
+                                    ? $request->service_charge
+                                    : $lastbill->Amount);
                 ServiceChargeCollection::create([
                     'Client_Code' => $lastbill->Client_Code,
                     'CMonth' => $request->CMonth,
                     'CYear' => $request->CYear,
                     'billing_month' => date('Y-m-d', strtotime('01-' . $request->CMonth . '-' . $request->CYear)),
-                    'Utility_ID' => $lastbill->Utility_ID,
-                    'Amount' => $lastbill->Amount,
+                    'Utility_ID' =>$lastbill->Utility_ID,
+                    'Amount' => $amount,
                     'SerialNo' => $serial_no,
                     'PaidDate' => $lastbill->PaidDate,
                     'PositionNo' => $lastbill->PositionNo,
