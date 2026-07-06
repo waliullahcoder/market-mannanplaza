@@ -234,40 +234,31 @@
 
 <div id="report_div">
 
-@if(count($data->bills) > 0)
-@foreach($data->bills as $code => $bill)
+@if(count($sgroup_bills) > 0)
+@foreach($sgroup_bills as $code => $bill)
+
 @php
-       
-    $total = 0;
-    $cmonth="-";
-    $cyear="-";
-    $createdby="-";
-    $billing_month="-";
-    $collections = collect($bill)->flatten();
-        foreach ($collections as $collection) {
-            if (!is_object($collection)) {
-                continue;
-            }
-            $total += $collection->Amount ?? 0;
-            $cyear = $collection->CYear ?? '-';
-            $cmonth = $collection->CMonth ?? '-';
-            $createdby = $collection->CreateBy ?? '-';
-            $billing_month = $collection->billing_month ?? '-';
-        }
-    $waterbill = App\WbillCollection::where('Client_Code', $code)->first();
-    $electbill = App\EbillCollection::where('Client_Code', $code)->first();
-    if(isset($electbill) && $cmonth=="-"){
-        $cmonth = $electbill->CMonth;
-        $cyear = $electbill->CYear;
-        $createdby = $electbill->CreateBy;
-    }
-    $servicebills = App\ServiceChargeCollection::where('Client_Code', $code)->where('CMonth', $cmonth)->where('CYear', $cyear)->get();
     
-    if ($electbill && isset($electbill->Amount)) {
-        $total += $electbill->Amount;
+   
+    $waterbill = App\WbillCollection::where('Client_Code', $code)->where('CMonth', $cmonth)->where('CYear', $cyear)->first();
+
+    $electbill = App\EbillCollection::where('Client_Code', $code)->where('CMonth', $cmonth)->where('CYear', $cyear)->first();
+    
+    $servicebills = App\ServiceChargeCollection::where('Client_Code', $code)->where('CMonth', $cmonth)->where('CYear', $cyear)->get();
+
+     $ebilltotal=0;
+     $wbilltotal=0;
+     $servicebilltotal=0;
+    if ($waterbill && isset($waterbill->Amount)) {
+        $wbilltotal += $waterbill->Amount;
     }
-        $collections = collect($bill)->flatten(1);
-        $first = $collections->first();
+     if ($electbill && isset($electbill->Amount)) {
+        $ebilltotal += $electbill->Amount;
+    }
+     if ($servicebills && !empty($servicebills)) {
+        foreach($servicebills as $servicebill)
+        $servicebilltotal += $servicebill->Amount;
+    }
     $copies = ['Office Copy', 'Client Copy'];
 @endphp
 
@@ -292,7 +283,7 @@
             </p>
              <div class="row">
                             <div class="col-md-3">
-                                <span>Created By: {{$createdby}}, Print Date: {{ date('d-F-Y', strtotime(now())) }}, Time: {{ date('h:i:s a', strtotime(now())) }}</span>
+                                <span>Created By: {{$sbill->CreateBy}}, Print Date: {{ date('d-F-Y', strtotime(now())) }}, Time: {{ date('h:i:s a', strtotime(now())) }}</span>
                             </div>
                             
                         </div>
@@ -301,12 +292,7 @@
         <div>
             <div class="copy-name">{{ $copy }}</div>
 
-            @if(isset($bill[0]) && $bill[0]->ReceiveDate)
-                <div class="paid-box">
-                    PAID<br>
-                    <small>{{ date('d M Y', strtotime($bill[0]->ReceiveDate)) }}</small>
-                </div>
-            @endif
+        
         </div>
     </div>
 
@@ -314,8 +300,8 @@
 
         <div>
             <div class="info-grid">
-                <div class="label">Shop No</div><div>:</div><div>{{ preg_match('/(\d+)$/', $code, $matches) ? $matches[1] : '' }}</div>
-                <div class="label">Mobile</div><div>:</div><div>{{ $first->position_holder->Mobile??'-' }}</div>
+                <div class="label">Shop No</div><div>:</div><div>{{ preg_match_all('/\d+/', $code, $matches) ? end($matches[0]) : '' }}</div>
+                <div class="label">Mobile</div><div>:</div><div>{{ $bill->first()->position_holder->Mobile ?? '' }}</div>
 
                 <div class="label">WC Unit</div><div>:</div><div>{{ isset($waterbill) ? $waterbill->LastUnit : 0 }}</div>
                 <div class="label">WP Unit</div><div>:</div><div>{{ isset($waterbill) ? $waterbill->PreviousUnit : 0 }}</div>
@@ -332,25 +318,24 @@
 
                 <div class="label">Total Bill</div><div>:</div>
 				<?php 
-					$wateramount= isset($waterbill) ? $waterbill->Amount : 0;
-					$net_total=$total+$wateramount;
-					?>
+					$net_total = $ebilltotal+$wbilltotal+$servicebilltotal;
+				?>
                 <div><span class="amount-box">{{ number_format(($net_total), 2) }}</span></div>
             </div>
 
             <div class="word-line">
                 <div class="label"><b>In a Word</b></div>
                 <div>:</div>
-                <div>{{ HelperClass::numberToWords($total) }} only.</div>
+                <div>{{ HelperClass::numberToWords($net_total) }} only.</div>
             </div>
         </div>
 
         <div>
             <div class="right-grid">
-                <div class="label">Shop Name</div><div>:</div><div>{{ $first->position_holder->SName??'-' }}</div>
-                <div class="label">Floor No</div><div>:</div><div>{{ $first->position_holder->Floor??'-' }}</div>
+                <div class="label">Shop Name</div><div>:</div><div>{{ $bill->first()->position_holder->SName ?? '' }}</div>
+                <div class="label">Floor No</div><div>:</div><div>{{ $bill->first()->position_holder->Floor ?? '' }}</div>
                 <div class="label">Client Code</div><div>:</div><div>{{ $code }}</div>
-                <div class="label">Client Name</div><div>:</div><div>{{ $first->position_holder->Name??'-' }}</div>
+                <div class="label">Client Name</div><div>:</div><div>{{ $bill->first()->position_holder->Name ?? '' }}</div>
                 <div class="label">EBill + Vat</div><div>:</div><div>{{ isset($electbill) ? number_format($electbill->Amount, 2) : '0.00' }}</div>
 
                

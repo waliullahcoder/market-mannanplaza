@@ -114,146 +114,40 @@ class EbillPrepareController extends Controller
   //   }
 
 	public function print($id)
-{
-    $title = "Utility Collection Print";
-    $searchFormLink = "tenant.report.search";
-    $printFormLink  = "tenant.report.print";
+    {
+        $title = "Utility Collection Print";
+        $searchFormLink = "tenant.report.search";
+        $printFormLink  = "tenant.report.print";
 
-    $parameters = EbillCollection::where('serialNo', $id)
-        ->with('position_holder')
-        ->get();
-
-    // if ($parameters->isEmpty()) {
-    //     return back()->with('error', 'No Bill Found For Serial No : ' . $id);
-    // }
-
-    $firstParameter = $parameters->first();
-
-    $ids = $parameters->pluck('Client_Code')->toArray();
-
-    $data = (object)[
-        'bills' => [],
-        'copies' => ['Office Copy', 'Client Copy'],
-        'project' => SetupProject::findOrFail(1),
-        'unit_prices' => UnitSetup::all(),
-    ];
-
-    // Electric Bill
-    $ebills = EbillCollection::where('serialNo', $id)
-        ->whereIn('Client_Code', $ids)
-        ->with('position_holder')
-        ->get();
-
-    foreach ($ebills as $ebill) {
-
-        if (!$ebill->position_holder) {
-            continue;
-        }
-
-        $code = $ebill->position_holder->Code;
-
-        $data->bills[$code][0] = $ebill;
-        $data->bills[$code]['tenant'] = $ebill->position_holder;
-        $data->bills[$code]['billCode'] =
-            $ebill->CMonth . '-' .
-            $ebill->CYear . '-' .
-            $ebill->position_holder->ID;
-
-        $data->bills[$code]['month'] = $ebill->CMonth;
-        $data->bills[$code]['year'] = $ebill->CYear;
+       $data = (object)[
+            'bills' => [],
+            'copies' => ['Office Copy', 'Client Copy'],
+            'project' => SetupProject::findOrFail(1),
+            'unit_prices' => UnitSetup::all(),
+        ];
+        $sbill = ServiceChargeCollection::where('SerialNo', $id)->first();
+        $cmonth=$sbill->CMonth;
+        $cyear=$sbill->CYear;
+        $billing_month=$sbill->billing_month;
+        $sgroup_bills = ServiceChargeCollection::where('SerialNo', $id)
+                ->with(['position_holder', 'utility'])
+                ->get()
+                ->groupBy('Client_Code');
+        return view(
+            'admin.prepare.ebill.print',
+            compact(
+                'title',
+                'sbill',
+                'sgroup_bills',
+                'cmonth',
+                'cyear',
+                'billing_month',
+                'searchFormLink',
+                'printFormLink',
+                'data'
+            )
+        );
     }
-
-    // Water Bill
-    if($firstParameter){
-      $wbills = WbillCollection::where('CMonth', $firstParameter->CMonth)
-        ->where('CYear', $firstParameter->CYear)
-        ->whereIn('Client_Code', $ids)
-        ->with('position_holder')
-        ->get();
-         foreach ($wbills as $wbill) {
-
-                if (!$wbill->position_holder) {
-                    continue;
-                }
-
-                $data->bills[$wbill->position_holder->Code][1] = $wbill;
-            }
-        }else{
-            $wbills =[];
-        }
-
-   $sbill = ServiceChargeCollection::where('SerialNo', $id)->first();
-   
-
-    // Service Charge
-    $sbills = ServiceChargeCollection::where('CMonth', $sbill->CMonth)
-        ->where('CYear', $sbill->CYear)->where('SerialNo', $id)->get();
-
-    $code = '';
-    $clientname = '';
-    $shopname = '';
-
-    foreach ($sbills as $sbill) {
-
-        if ($sbill->position_holder) {
-
-            $holderCode = $sbill->position_holder->Code;
-
-            $data->bills[$holderCode][2][] = $sbill;
-
-            $code = $sbill->Client_Code;
-            $clientname = $sbill->position_holder->Name ?? '';
-        } else {
-
-            $position = PositionInformation::where('Code', $sbill->Client_Code)->first();
-
-            if ($position) {
-
-                $holderCode = $position->Code;
-
-                $data->bills[$holderCode][2][] = $sbill;
-
-                $code = $position->Code;
-                $clientname = $position->Name;
-                $shopname = $position->SName;
-            }
-        }
-    }
-
-    $client = null;
-    $electbill = null;
-    $waterbill = null;
-
-    // if (!empty($code)) {
-
-    //     $client = PositionInformation::where('Code', $code)->first();
-
-    //     $electbill = EbillCollection::where('Client_Code', $code)
-    //         ->with('position_holder')
-    //         ->first();
-    //     $waterbill = WbillCollection::where('Client_Code', $code)
-    //         ->with('position_holder')
-    //         ->latest('id')
-    //         ->first();
-    // }
-
-    return view(
-        'admin.prepare.ebill.print',
-        compact(
-            'title',
-            'sbills',
-            'code',
-            'clientname',
-            'shopname',
-            'electbill',
-            'waterbill',
-            'client',
-            'searchFormLink',
-            'printFormLink',
-            'data'
-        )
-    );
-}
 
     public function add(Request $request)
     {
